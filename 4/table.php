@@ -1,51 +1,41 @@
 <?php
-declare(strict_types=1);
 
-require_once 'inc/lib.inc.php';
-require_once 'inc/data.inc.php';
 
-$cols = (int)(filter_input(INPUT_POST, 'cols') ?: 10);
-$rows = (int)(filter_input(INPUT_POST, 'rows') ?: 10);
-$color = filter_input(INPUT_POST, 'color') ?: 'yellow';
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $cols = abs((int) $_POST['cols']);
+    $rows = abs((int) $_POST['rows']);
+    $color = trim(strip_tags($_POST['color']));
+} else {
+    $cols = 10;
+    $rows = 10;
+    $color = '#ff0000'; 
+}
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Таблица умножения</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <?php include 'inc/top.inc.php'; ?>
-    </header>
 
-    <section>
-        <h1>Таблица умножения</h1>
-        
-        <form action="<?= $_SERVER['PHP_SELF'] ?? '' ?>" method="post">
-            <label>Кол-во столбцов: </label>
-            <input name='cols' type='text' value="<?= $cols ?>" size="3">
-            <label>Кол-во строк: </label>
-            <input name='rows' type='text' value="<?= $rows ?>" size="3">
-            <label>Цвет: </label>
-            <input name='color' type='text' value="<?= $color ?>" size="10">
-            <input type='submit' value='Создать'>
-        </form>
-        <br>
+<h3>Таблица умножения</h3>
+<form action='<?=$_SERVER['REQUEST_URI']?>' method='POST'>
+    <label>Количество колонок: </label>
+    <br>
+    <input name='cols' type='number' value='<?=$cols?>' required>
+    <br>
+    <label>Количество строк: </label>
+    <br>
+    <input name='rows' type='number' value='<?=$rows?>' required>
+    <br>
+    <label>Цвет: </label>
+    <br>
+    <input name='color' type='color' value='<?=$color?>' list="listColors">
+    <datalist id="listColors">
+        <option>#ff0000</option>
+        <option>#00ff00</option>
+        <option>#0000ff</option>
+    </datalist>
+    <br>
+    <br>
+    <input type='submit' value='Создать'>
+</form>
+<br>
 
-        <?php
-            /* Вызов функции из lib.inc.php */
-            getTable($cols, $rows, $color);
-        ?>
-        </section>
-
-    <nav>
-        <?php include 'inc/menu.inc.php'; ?>
-    </nav>
-
-    <footer>
-        <?php include 'inc/bottom.inc.php'; ?>
-    </footer>
-</body>
-</html>
+<?php
+getTable($rows, $cols, $color);
+?>
